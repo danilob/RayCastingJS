@@ -83,13 +83,33 @@ function Camera(eye, at, up) {
 //TODO: faça função que mapeia
 //de mundo para camera e retorne uma matriz 4x4
 function lookAtM(eye, at, up) {
+    var F = identity();
+    Vec = new Vec3();
+    zc = Vec.unitary(Vec.minus(eye, at));
+    xc = Vec.unitary(Vec.cross(up, zc));
+    yc = Vec.unitary(Vec.cross(zc, xc));
+    F[0][0] = xc.x;
+    F[0][1] = yc.x;
+    F[0][2] = zc.x;
 
+    F[1][0] = xc.y;
+    F[1][1] = yc.y;
+    F[1][2] = zc.y;
+
+    F[2][0] = xc.z;
+    F[2][1] = yc.z;
+    F[2][2] = zc.z;
+
+    F[0][3] = eye.x;
+    F[1][3] = eye.y;
+    F[2][3] = eye.z;
+    return F;
 }
 
 //TODO: faça função que mapeia
 //de câmera para mundo e retorne uma matriz 4x4
 function lookAtInverseM(eye, at, up) {
-
+    //
 }
 
 //de mundo para camera

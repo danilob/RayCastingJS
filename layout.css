@@ -96,3 +96,24 @@
         /* The width is 100%, when the viewport is 800px or smaller */
     }
 }
+
+#progress{
+    background: white;
+    border: 1px solid black;
+    height: 1em;
+    width: 100%;
+    margin: 1em 0;
+}
+
+#concluded{
+    margin: 0;
+    padding: 0;
+    background: white;
+    background-color: #4CAF50;
+    height: .89em;
+    width: 0%;
+}
+
+.hidden{
+    display: none;
+}
