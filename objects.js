@@ -80,8 +80,6 @@ function Camera(eye, at, up) {
     this.up = up;
 }
 
-//TODO: faça função que mapeia
-//de mundo para camera e retorne uma matriz 4x4
 function lookAtM(eye, at, up) {
     var F = identity();
     Vec = new Vec3();
@@ -106,8 +104,7 @@ function lookAtM(eye, at, up) {
     return F;
 }
 
-//TODO: faça função que mapeia
-//de câmera para mundo e retorne uma matriz 4x4
+//TODO: faça função que mapeia de camera para mundo de câmera para mundo e retorne uma matriz 4x4
 function lookAtInverseM(eye, at, up) {
     //
 }
