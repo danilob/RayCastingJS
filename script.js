@@ -15,6 +15,25 @@ const get = e => document.querySelector(e); //obtém um elemento
 
 point_intersection = null;
 
+//TODO:coloque uma função para especificar a câmera via interface
+var camera = new Camera();
+camera.eye = new Vec3(0, 0, 15.);
+camera.at = new Vec3(0, 0, 0);
+camera.up = new Vec3(0, 1., 0);
+
+function setCamera(_eye = new Vec3(0, 0, 15.), _at = new Vec3(0, 0, 0), _up = new Vec3(0, 1., 0)) {
+    camera.eye = _eye;
+    camera.at = _at;
+    camera.up = _up;
+}
+
+/* new function */
+function setProjection(_angle = 45, _near = 0.1, _far = 1000) {
+    near = _near;
+    far = _far;
+    angle = _angle;
+}
+
 function updateScene() {
     restart();
     eval(textarea.value);
@@ -103,11 +122,6 @@ async function renderCanvas() {
     deltaY = hl / canvas.height;
     deltaX = wl / canvas.width;
 
-    //TODO:coloque uma função para especificar a câmera via interface
-    camera = new Camera();
-    camera.eye = new Vec3(0, 0, 15.);
-    camera.at = new Vec3(0, 0, 0);
-    camera.up = new Vec3(0, 1., 0);
 
     await updateProgress(0);
 
