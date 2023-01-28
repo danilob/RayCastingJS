@@ -69,10 +69,6 @@ async function updateProgress(percent) {
     }
 }
 
-//TODO:coloque uma função para especificar a projeção
-
-
-
 textarea.addEventListener("input", updateScene());
 
 async function calculateIntersection(ray, i, j) {
@@ -89,8 +85,8 @@ async function calculateIntersection(ray, i, j) {
             var normal = result[2];
             var viewer = camera.eye;
             //TODO: fazer o cálculo de phong e setar na variável colorF
-            var colorF = new Vec3(228 / 255., 44 / 255., 100 / 255.);
-            //colorF = phongColor(position, normal, viewer);
+            //var colorF = new Vec3(228 / 255., 44 / 255., 100 / 255.);
+            colorF = phongColor(position, normal, viewer);
             ctx.fillStyle = "rgb(" + Math.min(colorF.x, 1) * 255 + "," + Math.min(colorF.y, 1) * 255 + "," + Math.min(colorF.z, 1) * 255 + ")";
             ctx.fillRect(i, j, 1, 1);
 
