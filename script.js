@@ -90,6 +90,7 @@ async function calculateIntersection(ray, i, j) {
             var viewer = camera.eye;
             //TODO: fazer o cálculo de phong e setar na variável colorF
             var colorF = new Vec3(228 / 255., 44 / 255., 100 / 255.);
+            //colorF = phongColor(position, normal, viewer);
             ctx.fillStyle = "rgb(" + Math.min(colorF.x, 1) * 255 + "," + Math.min(colorF.y, 1) * 255 + "," + Math.min(colorF.z, 1) * 255 + ")";
             ctx.fillRect(i, j, 1, 1);
 
