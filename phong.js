@@ -24,12 +24,12 @@ gl_FragColor = vec4(Ka * ambientColor +
 function phongColor(_position_obj, _normal_obj, _position_viewer, light = undefined, object = undefined) {
     /*parameters light*/
     light_position = new Vec3(0, 5, 0);
-    light_amb = new Vec3(.1, .1, .1);
+    light_amb = new Vec3(.2, .2, .2);
     light_dif = new Vec3(.8, .8, .8);
     light_spe = new Vec3(0, 0, 0);
 
     /*paramenters object */
-    object_amb = new Vec3(.1, .1, .1);
+    object_amb = new Vec3(.7, .1, 0);
     object_dif = new Vec3(1, .1, 0);
     object_spe = new Vec3(0, 0, 0);
 

@@ -96,9 +96,6 @@ function rotateMatrixZ(theta) {
 function rotateMatrixZI(theta) {
     return transpose(rotateMatrixZ(theta));
 }
-//TODO: definir matriz de rotação no eixo y passando um angulo em graus com retorno: 4x4
-
-//TODO: definir matriz de rotação no eixo z passando um angulo em graus com retorno: 4x4
 
 function multMatrix(a, b) {
     var aNumRows = a.length,
@@ -119,7 +116,7 @@ function multMatrix(a, b) {
 }
 
 function multVec(A, b) { //multiplicação de uma matriz (4x4) e um vetor 4x1
-    var C = [0, 0, 0, 1];
+    var C = [0, 0, 0, 0];
     var i;
     for (i = 0; i < 4; i++) {
         C[i] = A[i][0] * b[0] + A[i][1] * b[1] + A[i][2] * b[2] + +A[i][3] * b[3];
@@ -128,8 +125,8 @@ function multVec(A, b) { //multiplicação de uma matriz (4x4) e um vetor 4x1
 }
 
 function multVec4(A, p) { //multiplicação de uma matriz (4x4) e um vetor 4x1
-    var b = [p.x, p.y, p.z, 1];
-    var C = [0, 0, 0, 1];
+    var b = [p.x, p.y, p.z, p.w];
+    var C = [0, 0, 0, 0];
     var i;
     for (i = 0; i < 4; i++) {
         C[i] = A[i][0] * b[0] + A[i][1] * b[1] + A[i][2] * b[2] + +A[i][3] * b[3];

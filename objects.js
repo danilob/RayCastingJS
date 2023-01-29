@@ -1,6 +1,7 @@
 function Ray(o, d) {
     this.o = o; //origem
     this.d = d; //direção do raio
+    this.d.w = 0;
 }
 
 Ray.prototype.show = function() {
@@ -16,7 +17,7 @@ function Vec3() {
     this.x = 0;
     this.y = 0;
     this.z = 0;
-    this.w = 0;
+    this.w = 1;
 }
 
 function Vec3(x, y, z, w = 1) {
@@ -64,16 +65,14 @@ Vec3.prototype.compond = function(p, p0) {
 }
 Vec3.prototype.unitary = function(p) {
     var m = this.module(p);
-    return new Vec3(p.x / m, p.y / m, p.z / m);
+    return new Vec3(p.x / m, p.y / m, p.z / m, 0);
 }
 
 Vec3.prototype.show = function() {
     console.log("x: " + this.x + ", y: " + this.y + ", z: " + this.z);
 }
 
-//ids shape
-var sphere = 1;
-var plane = 2;
+
 
 function Camera(eye, at, up) {
     this.eye = eye;
@@ -120,6 +119,11 @@ Camera.prototype.lookAtInverse = function() {
     return lookAtInverseM(this.eye, this.at, this.up);
 }
 
+//ids shape
+var sphere = 1;
+var plane = 2;
+var triangle = 3;
+
 function Shape(type_shape = sphere) {
     this.geometry = type_shape;
     this.name = "";
@@ -165,25 +169,14 @@ Shape.prototype.transformMatrix = function() {
     return multMatrix(T, multMatrix(R, S));
 }
 
-Shape.prototype.transformMatrixVec = function() {
-    var R = multMatrix(rotateMatrixX(this.rotate.x), multMatrix(rotateMatrixY(this.rotate.y), rotateMatrixZ(this.rotate.z))); //TODO: modificar para receber a matriz de rotação
-    var S = scaleMatrix(this.scale.x, this.scale.y, this.scale.z);
-    return multMatrix(R, S);
-}
-
 Shape.prototype.transformMatrixInverse = function() {
-    var Ti = translateMatrixI(this.translate.x, this.translate.y, this.translate.z); //TODO: modificar para receber a matriz de escala
-    var Ri = multMatrix(rotateMatrixXI(this.rotate.z), multMatrix(rotateMatrixYI(this.rotate.y), rotateMatrixZI(this.rotate.x))); //TODO: modificar para receber a matriz de rotação
+    var Ti = translateMatrixI(this.translate.x, this.translate.y, this.translate.z);
+    var Ri = multMatrix(rotateMatrixZI(this.rotate.z), multMatrix(rotateMatrixYI(this.rotate.y), rotateMatrixXI(this.rotate.x)));
     var Si = scaleMatrixI(this.scale.x, this.scale.y, this.scale.z);
     return multMatrix(Si, multMatrix(Ri, Ti));
 }
 
-Shape.prototype.transformMatrixVecInverse = function() {
-    var Ti = translateMatrixI(this.translate.x, this.translate.y, this.translate.z); //TODO: modificar para receber a matriz de escala
-    var Ri = multMatrix(rotateMatrixXI(this.rotate.z), multMatrix(rotateMatrixYI(this.rotate.y), rotateMatrixZI(this.rotate.x))); //TODO: modificar para receber a matriz de rotação
-    var Si = scaleMatrixI(this.scale.x, this.scale.y, this.scale.z);
-    return multMatrix(Si, Ri);
-}
+
 
 Shape.prototype.testPlaneIntersection = function(ray) {
     var Vec = new Vec3();
@@ -197,7 +190,67 @@ Shape.prototype.testPlaneIntersection = function(ray) {
             return t;
         }
     }
+    return undefined;
+}
 
+
+
+
+Shape.prototype.testTriangleIntersection = function(ray) {
+    //transformando de coordenadas de mundo paa coordenadas de objeto
+    var Vec = new Vec3();
+    var M_i = this.transformMatrixInverse();
+    ray.o = multVec4(M_i, ray.o);
+    ray.d = multVec4(M_i, ray.d);
+    var n_plane = new Vec3(0, 1, 0);
+    var q_plane = new Vec3(0, 0, 0);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+        var a_point = new Vec3(0, 0, 0.5);
+        var b_point = new Vec3(0.5, 0, -0.5);
+        var c_point = new Vec3(-0.5, 0, -0.5);
+        if (
+            Vec.dot((Vec.cross(Vec.minus(b_point, a_point), Vec.minus(point, a_point))), n_plane) >= 0 &&
+            Vec.dot((Vec.cross(Vec.minus(c_point, b_point), Vec.minus(point, b_point))), n_plane) >= 0 &&
+            Vec.dot((Vec.cross(Vec.minus(a_point, c_point), Vec.minus(point, c_point))), n_plane) >= 0
+        ) {
+            return t;
+        }
+    }
+    return undefined;
+}
+
+Shape.prototype.testTriangleTestIntersection = function(ray) {
+    //transformando de coordenadas de mundo paa coordenadas de objeto
+    var Vec = new Vec3();
+    var M_i = this.transformMatrixInverse();
+    ray.o = multVec4(M_i, ray.o);
+    ray.d = multVec4(M_i, ray.d);
+
+    console.log('origin', ray.o)
+    console.log('direction', ray.d)
+
+    var n_plane = new Vec3(0, 1, 0);
+    var q_plane = new Vec3(0, 0, 0);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+        console.log('t', t)
+        console.log(point)
+        var a_point = new Vec3(0, 0, 0.5);
+        var b_point = new Vec3(0.5, 0, -0.5);
+        var c_point = new Vec3(-0.5, 0, -0.5);
+        if (
+            Vec.dot((Vec.cross(Vec.minus(b_point, a_point), Vec.minus(point, a_point))), n_plane) >= 0 &&
+            Vec.dot((Vec.cross(Vec.minus(c_point, b_point), Vec.minus(point, b_point))), n_plane) >= 0 &&
+            Vec.dot((Vec.cross(Vec.minus(a_point, c_point), Vec.minus(point, c_point))), n_plane) >= 0
+        ) {
+            return t;
+        }
+    }
     return undefined;
 }
 
@@ -205,24 +258,21 @@ Shape.prototype.getDataIntersection = function(ray_w, normal, point) {
     var Vec = new Vec3();
     var M = this.transformMatrix();
     point = multVec4(M, point);
-    M = this.transformMatrixVec();
+    normal.w = 0; //considerar como sendo um vetor
     normal = multVec4(M, normal);
-    normal = Vec.unitary(normal);
     var t_ = Vec.module(Vec.minus(point, ray_w.o));
     return [true, point, normal, t_];
 }
 
 Shape.prototype.testIntersectionRay = function(ray) {
     //salvando raio em coordenadas do mundo para calcular o parâmetro t
-    var ray_w = ray;
+    var ray_w = new Ray(ray.o, ray.d);
     var M_i = this.transformMatrixInverse();
-    var M_i_v = this.transformMatrixVecInverse();
     var Vec = new Vec3();
     //transformando raio para coordenadas locais do objeto
-    Vec = new Vec3();
-    ray.d = Vec.minus(ray.d, ray.o);
+
     ray.o = multVec4(M_i, ray.o);
-    ray.d = multVec4(M_i_v, ray.d);
+    ray.d = multVec4(M_i, ray.d);
 
     if (this.geometry == sphere) { //testar interseção com a esfera
         //interseção com esfera na origem e raio unitário
@@ -233,10 +283,10 @@ Shape.prototype.testIntersectionRay = function(ray) {
         if (delta >= 0) {
             var t1 = (-b + Math.sqrt(delta)) / (2 * a);
             var t2 = (-b - Math.sqrt(delta)) / (2 * a);
+
             t = Math.min(t1, t2);
             var point = ray.get(t);
             var normal = point;
-
             return this.getDataIntersection(ray_w, normal, point)
         }
 
@@ -248,6 +298,28 @@ Shape.prototype.testIntersectionRay = function(ray) {
             return this.getDataIntersection(ray_w, normal, point)
         }
 
+    } else if (this.geometry == triangle) {
+        t = this.testTriangleIntersection(ray)
+        if (t !== undefined) {
+            var point = ray.get(t);
+            var normal = new Vec3(0, 1, 0);
+            return this.getDataIntersection(ray_w, normal, point)
+        }
+
     }
     return [false, null];
+}
+
+
+function exercise_22() {
+    var Vec = new Vec3();
+    var shape = new Shape("triangle", 3);
+    shape.setTranslate(0, 2, -2);
+    shape.setScale(3, 2, 3);
+    shape.setRotateX(90);
+
+    var ray = new Ray(new Vec3(5, 5, 5), Vec.minus(new Vec3(0, 2, 1), new Vec3(5, 5, 5)));
+
+    result = shape.testTriangleTestIntersection(ray);
+    console.log(result)
 }

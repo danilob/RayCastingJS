@@ -72,14 +72,17 @@ async function updateProgress(percent) {
 textarea.addEventListener("input", updateScene());
 
 async function calculateIntersection(ray, i, j) {
+    var Vec = new Vec3();
     var intercept = false;
+    var best_result = undefined;
     for (var k = 0; k < objects.length; k++) {
         var shape = objects[k];
         //raio transformado em coordenadas do mundo
         var ray_w = new Ray(multVec4(camera.lookAt(), ray.o), multVec4(camera.lookAt(), ray.d));
         var result = shape.testIntersectionRay(ray_w);
         //TODO: verificar onde ocorreu a menor interseção
-        if (result[0]) {
+        if (result[0] && (best_result === undefined || result[3] < best_result[3])) {
+            best_result = result
             intercept = true;
             var position = result[1];
             var normal = result[2];
@@ -130,11 +133,10 @@ async function renderCanvas() {
 
             var o = new Vec3(0, 0, 0); //origem de câmera
             var d = new Vec3(point.x, point.y, point.z);
-            ray = new Ray(o, d);
+            ray = new Ray(o, new Vec3().minus(d, o));
             calculateIntersection(ray, i, j);
             actual_ray_count++;
             if ((i * j + 1) % ((canvas.width * canvas.height) / 50) == 0) {
-                console.log(actual_ray_count)
                 await updateProgress(actual_ray_count / max_rays * 100);
                 await sleep(100);
             }
